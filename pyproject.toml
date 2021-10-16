@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "envex"
-version = "1.0.0"
+version = "1.0.1"
 description = "An extended os.environ interface"
 authors = ["David Nugent <davidn@uniquode.io>"]
 

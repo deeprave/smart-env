@@ -1,24 +1,22 @@
-*********
-smart-env
-*********
+************
+env exTENDED
+************
 
-Smart .env aware environment variable handling
+dot .env aware environment variable handling with typing features
 
 Overview
 --------
 
-This is a refactoring of django_env with Django specific functionality stripped out,
-and so implements all of the smart environment handling suitable for use outside of
-Django.
+This is a refactoring of django-settings-env with Django specific functionality stripped out,
+and so implements all of the smart environment handling suitable for use outside of Django.
 
 This module provides a convenient interface for handling the environment, and therefore
-configuration of any application using 12factor.net principals.
+configuration of any application using 12factor.net principals removing variable and
+security sensitive information form the app code.
 
 This module provides some features not supported by other dotenv handlers
 (python-dotenv, etc.) including expansion of template variables which is very useful
-for DRY.
-
-An `Env` instance delivers a lot of functionality by providing a type-smart
+for DRY. An `Env` instance delivers a lot of functionality by providing a type-smart
 front-end to `os.environ`, with support for most - if not all - `os.environ`
 functionality.
 ::
@@ -42,8 +40,8 @@ functionality.
 
 
 An Env instance can also read a `.env` (default name) file and update the
-environment accordingly.
-It can read this either from the constructor or via the method `read_env()`.
+application environment accordingly.
+It can read this either from `__init__` or via the method `read_env()`.
 
 Some type-smart functions act as an alternative to `Env.get` and having to
 parse the result:
