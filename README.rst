@@ -2,7 +2,7 @@
 env exTENDED
 ************
 
-dot .env aware environment variable handling with typing features
+dotenv `.env` aware environment variable handling with typing features
 
 Overview
 --------
@@ -11,16 +11,17 @@ This is a refactoring of django-settings-env with Django specific functionality 
 and so implements all of the smart environment handling suitable for use outside of Django.
 
 This module provides a convenient interface for handling the environment, and therefore
-configuration of any application using 12factor.net principals removing variable and
-security sensitive information form the app code.
+configuration of any application using 12factor.net principals removing many environment specific
+variables and security sensitive information from application code.
 
 This module provides some features not supported by other dotenv handlers
 (python-dotenv, etc.) including expansion of template variables which is very useful
-for DRY. An `Env` instance delivers a lot of functionality by providing a type-smart
-front-end to `os.environ`, with support for most - if not all - `os.environ`
-functionality.
+for DRY.
+
+An `Env` instance delivers a lot of functionality by providing a type-smart
+front-end to `os.environ`, with support for most - if not all - `os.environ` functionality.
 ::
-    from django_env import Env
+    from envex import Env
 
     env = Env()         # by default, sources (and updates) os.environ
     assert env['HOME'] ==  '/Users/davidn'
@@ -41,12 +42,27 @@ functionality.
 
 An Env instance can also read a `.env` (default name) file and update the
 application environment accordingly.
+
 It can read this either from `__init__` or via the method `read_env()`.
+
+* Override the base name of the dot env file, use the `DOTENV` environment variable.
+* Other kwargs that can be passed to `Env.__init__`
+
+  * env_file (str): base name of the env file, os.environ["DOTENV"] by default, or .env
+  * search_path (str or list): a single path or list of paths to search for the env file
+  * overwrite (bool): overwrite already set values read from .env, default is to only set if not currently set
+  * parents (bool): search (or not) parents of dirs in the search_path
+  * update (bool): update os.environ if true (default) otherwise pool changes internally
+  * environ (env): pass the environment to update, default is os.environ
+
+* Env() also takes an additional kwarg, `readenv` (default False) which instructs it to read dotenv files
+
+
 
 Some type-smart functions act as an alternative to `Env.get` and having to
 parse the result:
 ::
-    from django_env import Env
+    from envex import Env
 
     env = Env()         # by default, sources (and updates) os.environ
 
