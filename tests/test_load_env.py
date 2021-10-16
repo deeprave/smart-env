@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import contextlib
 
-import smart_env
+import envex
 import io
 import pytest
 
@@ -31,8 +31,8 @@ SINGLE_QUOTED='a quoted value'
 
 
 def test_load_env(monkeypatch, envmap):
-    monkeypatch.setattr(smart_env.dot_env, 'open_env', dotenv)
-    env = smart_env.load_env(search_path=__file__, environ=envmap)
+    monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
+    env = envex.load_env(search_path=__file__, environ=envmap)
     for var in envmap.keys():
         assert var in env
     assert 'FIFTH' in env
@@ -40,8 +40,8 @@ def test_load_env(monkeypatch, envmap):
 
 
 def test_load_env_overwrite(monkeypatch, envmap):
-    monkeypatch.setattr(smart_env.dot_env, 'open_env', dotenv)
-    env = smart_env.load_env(search_path=__file__, environ=envmap, overwrite=True)
+    monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
+    env = envex.load_env(search_path=__file__, environ=envmap, overwrite=True)
     for var in envmap.keys():
         assert var in env
     assert 'FIFTH' in env
@@ -49,7 +49,7 @@ def test_load_env_overwrite(monkeypatch, envmap):
 
 
 def test_quoted_value(monkeypatch, envmap):
-    monkeypatch.setattr(smart_env.dot_env, 'open_env', dotenv)
-    env = smart_env.load_env(search_path=__file__, environ=envmap)
+    monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
+    env = envex.load_env(search_path=__file__, environ=envmap)
     assert env['DOUBLE_QUOTED'] == 'a quoted value'
     assert env['SINGLE_QUOTED'] == 'a quoted value'

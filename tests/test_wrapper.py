@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import contextlib
 import io
-import smart_env
+import envex
 import pytest
 
 
@@ -27,27 +27,27 @@ def dotenv(ignored):
 
 
 def test_env_wrapper():
-    env = smart_env.Env()
+    env = envex.Env()
     assert 'HOME' in env
     assert 'USER' in env
 
 
 def test_env_int(monkeypatch):
-    monkeypatch.setattr(smart_env.dot_env, 'open_env', dotenv)
-    env = smart_env.Env(readenv=True)
+    monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
+    env = envex.Env(readenv=True)
     assert env.int('INTVALUE', default=99) == 225
     assert env.int('DEFAULTINTVALUE', default=981) == 981
 
 
 def test_env_float(monkeypatch):
-    monkeypatch.setattr(smart_env.dot_env, 'open_env', dotenv)
-    env = smart_env.Env(readenv=True)
+    monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
+    env = envex.Env(readenv=True)
     assert env.float('FLOATVALUE', default=99.9999) == 54.92
     assert env.float('DEFAULTFLOATVALUE', default=83.6) == 83.6
 
 
 def test_is_true():
-    env = smart_env.Env()
+    env = envex.Env()
     assert env.is_true(1)
     assert env.is_true('1')
     assert not env.is_true(0)
@@ -59,8 +59,8 @@ def test_is_true():
 
 
 def test_env_bool(monkeypatch):
-    monkeypatch.setattr(smart_env.dot_env, 'open_env', dotenv)
-    env = smart_env.Env(readenv=True)
+    monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
+    env = envex.Env(readenv=True)
     assert env.bool('BOOLVALUETRUE', default=False)
     assert env.bool('DEFAULTBOOLVALUETRUE', default=True)
     assert not env.bool('BOOLVALUEFALSE', default=True)
@@ -68,8 +68,8 @@ def test_env_bool(monkeypatch):
 
 
 def test_env_list(monkeypatch):
-    monkeypatch.setattr(smart_env.dot_env, 'open_env', dotenv)
-    env = smart_env.Env(readenv=True)
+    monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
+    env = envex.Env(readenv=True)
 
     result = env.list('ALISTOFIPS')
     assert isinstance(result, list)
@@ -83,8 +83,8 @@ def test_env_list(monkeypatch):
 
 
 def test_env_iter(monkeypatch):
-    monkeypatch.setattr(smart_env.dot_env, 'open_env', dotenv)
-    env = smart_env.Env(readenv=True, update=False)
+    monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
+    env = envex.Env(readenv=True, update=False)
 
     # test items() itself (returned by __iter__)
     for var, val in env.items():
@@ -105,13 +105,13 @@ def test_env_iter(monkeypatch):
 def test_env_exception():
     class MyException(Exception):
         pass
-    env = smart_env.Env(exception=MyException)
+    env = envex.Env(exception=MyException)
     with pytest.raises(MyException):
         _ = env['UNDEFINEDVARIABLE']
 
 
 def test_env_export():
-    env = smart_env.Env()
+    env = envex.Env()
     assert 'MYVARIABLE' not in env
     env.export(MYVARIABLE='somevalue')
     assert env['MYVARIABLE'] == 'somevalue'
@@ -135,8 +135,8 @@ def test_env_export():
 
 
 def test_env_contains(monkeypatch):
-    monkeypatch.setattr(smart_env.dot_env, 'open_env', dotenv)
-    env = smart_env.Env()
+    monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
+    env = envex.Env()
     # must be explicitly read in
     env.read_env()
 

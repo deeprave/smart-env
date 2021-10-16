@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "smart-env"
-version = "0.1.0"
-description = ""
+name = "envex"
+version = "1.0.0"
+description = "An extended os.environ interface"
 authors = ["David Nugent <davidn@uniquode.io>"]
 
 [tool.poetry.dependencies]
@@ -9,18 +9,15 @@ python = "^3.9"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
-pytest-env = "*"
 pytest-pythonpath = "*"
 
 [tool.pytest.ini-options]
 minversion = "6.0"
 python_paths = [
-    "smart_env"
+    "envex"
 ]
 testpaths = [
     "tests"
-]
-env = [
 ]
 
 
