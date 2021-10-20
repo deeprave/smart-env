@@ -20,7 +20,7 @@ for DRY.
 
 An `Env` instance delivers a lot of functionality by providing a type-smart
 front-end to `os.environ`, with support for most - if not all - `os.environ` functionality.
-::
+```python
     from envex import Env
 
     env = Env()         # by default, sources (and updates) os.environ
@@ -38,7 +38,7 @@ front-end to `os.environ`, with support for most - if not all - `os.environ` fun
     assert env.get('UNSET_VAR') == 'this is now set'
     del env['UNSET_VAR']
     assert env.get('UNSET_VAR') is None
-
+```
 
 An Env instance can also read a `.env` (default name) file and update the
 application environment accordingly.
@@ -61,7 +61,7 @@ It can read this either from `__init__` or via the method `read_env()`.
 
 Some type-smart functions act as an alternative to `Env.get` and having to
 parse the result:
-::
+```python
     from envex import Env
 
     env = Env()         # by default, sources (and updates) os.environ
@@ -86,8 +86,9 @@ parse the result:
     env['A_LIST_VALUE'] = '1,"two",3,"four"'
     assert env.get('A_LIST_VALUE') == '1,"two",3,"four"'
     assert env.list('A_LIST_VALUE') == ['1', 'two', '3', 'four']
-
+```
 
 Note that environment variables are always stored as strings. This is
 enforced by the underlying os.environ, but also also true of any provided
 environment, using the `MutableMapping[str, str]` contract.
+
