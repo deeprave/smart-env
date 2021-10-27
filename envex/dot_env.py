@@ -21,24 +21,29 @@ def unquote(line, quotes='"\''):
     return line
 
 
-def _env_files(env_file: str, search_path: List[Path], parents: bool) -> List[str]:
+def _env_files(env_file: str, search_path: List[Path], parents: bool, errors: bool) -> List[str]:
     """ expand env_file with full search path, optionally parents as well """
-    to_process = []
 
+    searched = []
     for path in search_path:
         path = path.resolve()
         if not path.is_dir():
             path = path.parent
+        searched.append(path)
         paths = [path] + list(path.parents)
+        # search a path and parents
         for sub_path in paths:
             # stop at first found, or ...
             # fail fast unless searching parents
             env_path = os.path.join(sub_path, env_file)
-            if os.access(env_path, os.R_OK) or not parents:
-                to_process.append(env_path)
+            if os.access(env_path, os.R_OK):
+                yield env_path
+            elif not parents:
                 break
-
-    return to_process
+    if errors:
+        raise FileNotFoundError(f"{env_file} in {[s.as_posix() for s in searched]}")
+    else:
+        yield env_file
 
 
 @contextlib.contextmanager
@@ -54,7 +59,7 @@ def open_env(path: Union[str, Path]):
 
 
 def _process_env(env_file: str, search_path: List[Path], environ: MutableMapping[str, str], overwrite: bool,
-                 parents: bool) -> MutableMapping[str, str]:
+                 parents: bool, errors: bool) -> MutableMapping[str, str]:
     """ search for any env_files in given dir list and populate environ dict
     :param env_file: base environment file name to use
     :param search_path: list of one or more paths to search
@@ -71,13 +76,19 @@ def _process_env(env_file: str, search_path: List[Path], environ: MutableMapping
             if overwrite or key not in environ:
                 environ[key] = unquote(val)
 
-    for env_path in _env_files(env_file, search_path, parents):
-        with open_env(env_path) as f:
-            for line in f.readlines():
-                line = line.strip()
-                if line and line[0] != '#':
-                    process_line(line)
-
+    for env_path in _env_files(env_file, search_path, parents, errors):
+        # insert PWD as container of env file
+        env_path = Path(env_path)
+        environ.setdefault('PWD', str(env_path.parent))
+        try:
+            with open_env(env_path) as f:
+                for line in f.readlines():
+                    line = line.strip()
+                    if line and line[0] != '#':
+                        process_line(line)
+        except FileNotFoundError:
+            if errors:
+                raise
     return environ
 
 
@@ -101,7 +112,7 @@ def _update_os_env(environ: MutableMapping[str, str]) -> MutableMapping[str, str
 
 
 def load_env(env_file: str = None, search_path: Union[None, Union[List[str], List[Path]], str] = None,
-             overwrite: bool = False, parents: bool = False, update: bool = True,
+             overwrite: bool = False, parents: bool = False, update: bool = True, errors: bool = False,
              environ: MutableMapping[str, str] = None) -> MutableMapping[str, str]:
     """
     Loads one or more .env files with optional nesting, updating os.environ
@@ -119,7 +130,7 @@ def load_env(env_file: str = None, search_path: Union[None, Union[List[str], Lis
         env_file = environ.get(DEFAULT_ENVKEY, DEFAULT_DOTENV)
 
     # insert this as a useful default, login shells only define it locally
-    environ.setdefault('PWD', str(Path.cwd().resolve(strict=True)))
+    environ.setdefault('CWD', str(Path.cwd().resolve(strict=True)))
 
     # determine where to search
     if search_path is None:
@@ -136,7 +147,7 @@ def load_env(env_file: str = None, search_path: Union[None, Union[List[str], Lis
 
     # slurp up the environment files found and
     # post process values for template variables
-    environ = _post_process(_process_env(env_file, search_path, environ.copy(), overwrite, parents))
+    environ = _post_process(_process_env(env_file, search_path, environ.copy(), overwrite, parents, errors))
     # optionally update the actual environment
     return _update_os_env(environ) if update else environ
 
