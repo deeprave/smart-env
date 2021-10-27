@@ -79,7 +79,7 @@ def _process_env(env_file: str, search_path: List[Path], environ: MutableMapping
     for env_path in _env_files(env_file, search_path, parents, errors):
         # insert PWD as container of env file
         env_path = Path(env_path)
-        environ.setdefault('PWD', str(env_path.parent))
+        environ['PWD'] = str(env_path.parent)
         try:
             with open_env(env_path) as f:
                 for line in f.readlines():
@@ -129,8 +129,8 @@ def load_env(env_file: str = None, search_path: Union[None, Union[List[str], Lis
     if not env_file:
         env_file = environ.get(DEFAULT_ENVKEY, DEFAULT_DOTENV)
 
-    # insert this as a useful default, login shells only define it locally
-    environ.setdefault('CWD', str(Path.cwd().resolve(strict=True)))
+    # insert this as a useful default
+    environ['CWD'] = str(Path.cwd().resolve(strict=True))
 
     # determine where to search
     if search_path is None:
