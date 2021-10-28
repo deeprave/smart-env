@@ -1,3 +1,7 @@
+1.1.2
+
+- ensure that env_path is resolved before updating $PWD
+
 1.1.1
 
 - updated $PWD/$CWD handling again, set these rather than setdefault to override possible

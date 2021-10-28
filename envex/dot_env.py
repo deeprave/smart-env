@@ -78,7 +78,7 @@ def _process_env(env_file: str, search_path: List[Path], environ: MutableMapping
 
     for env_path in _env_files(env_file, search_path, parents, errors):
         # insert PWD as container of env file
-        env_path = Path(env_path)
+        env_path = Path(env_path).resolve()
         environ['PWD'] = str(env_path.parent)
         try:
             with open_env(env_path) as f:
