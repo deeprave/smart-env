@@ -21,23 +21,22 @@ for DRY.
 An `Env` instance delivers a lot of functionality by providing a type-smart
 front-end to `os.environ`, with support for most - if not all - `os.environ` functionality.
 ```python
-    from envex import Env
+from envex import env
 
-    env = Env()         # by default, sources (and updates) os.environ
-    assert env['HOME'] ==  '/Users/davidn'
-    env['TESTING'] = 'This is a test'
-    assert env['TESTING'] == 'This is a test'
+assert env['HOME'] ==  '/Users/davidn'
+env['TESTING'] = 'This is a test'
+assert env['TESTING'] == 'This is a test'
 
-    import os
-    assert os.environ['TESTING'] == 'This is a test'
+import os
+assert os.environ['TESTING'] == 'This is a test'
 
-    assert env.get('UNSET_VAR') is None
-    env.set('UNSET_VAR', 'this is now set')
-    assert env.get('UNSET_VAR') is not None
-    env.setdefault('UNSET_VAR', 'and this is a default value but only if not set')
-    assert env.get('UNSET_VAR') == 'this is now set'
-    del env['UNSET_VAR']
-    assert env.get('UNSET_VAR') is None
+assert env.get('UNSET_VAR') is None
+env.set('UNSET_VAR', 'this is now set')
+assert env.get('UNSET_VAR') is not None
+env.setdefault('UNSET_VAR', 'and this is a default value but only if not set')
+assert env.get('UNSET_VAR') == 'this is now set'
+del env['UNSET_VAR']
+assert env.get('UNSET_VAR') is None
 ```
 
 An Env instance can also read a `.env` (default name) file and update the
@@ -62,33 +61,30 @@ It can read this either from `__init__` or via the method `read_env()`.
 Some type-smart functions act as an alternative to `Env.get` and having to
 parse the result:
 ```python
-    from envex import Env
+from envex import env
 
-    env = Env()         # by default, sources (and updates) os.environ
+env['AN_INTEGER_VALUE'] = 2875083
+assert env.get('AN_INTEGER_VALUE') == '2875083'
+assert env.int('AN_INTEGER_VALUE') == 2875083
 
-    env['AN_INTEGER_VALUE'] = 2875083
-    assert env.get('AN_INTEGER_VALUE') == '2875083'
-    assert env.int('AN_INTEGER_VALUE') == 2875083
+env['A_TRUE_VALUE'] = True
+assert env.get('A_TRUE_VALUE') == 'True'
+assert env.bool('A_TRUE_VALUE') is True
 
-    env['A_TRUE_VALUE'] = True
-    assert env.get('A_TRUE_VALUE') == 'True'
-    assert env.bool('A_TRUE_VALUE') is True
+env['A_FALSE_VALUE'] = 0
+assert env.get('A_FALSE_VALUE') == '0'
+assert env.int('A_FALSE_VALUE') == 0
+assert env.bool('A_FALSE_VALUE') is False
 
-    env['A_FALSE_VALUE'] = 0
-    assert env.get('A_FALSE_VALUE') == '0'
-    assert env.int('A_FALSE_VALUE') == 0
-    assert env.bool('A_FALSE_VALUE') is False
+env['A_FLOAT_VALUE'] = 287.5083
+assert env.get('A_FLOAT_VALUE') == '287.5083'
+assert env.float('A_FLOAT_VALUE') == 287.5083
 
-    env['A_FLOAT_VALUE'] = 287.5083
-    assert env.get('A_FLOAT_VALUE') == '287.5083'
-    assert env.float('A_FLOAT_VALUE') == 287.5083
-
-    env['A_LIST_VALUE'] = '1,"two",3,"four"'
-    assert env.get('A_LIST_VALUE') == '1,"two",3,"four"'
-    assert env.list('A_LIST_VALUE') == ['1', 'two', '3', 'four']
+env['A_LIST_VALUE'] = '1,"two",3,"four"'
+assert env.get('A_LIST_VALUE') == '1,"two",3,"four"'
+assert env.list('A_LIST_VALUE') == ['1', 'two', '3', 'four']
 ```
 
 Note that environment variables are always stored as strings. This is
 enforced by the underlying os.environ, but also also true of any provided
 environment, using the `MutableMapping[str, str]` contract.
-

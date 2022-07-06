@@ -165,3 +165,5 @@ class Env:
             if not url and raise_error:
                 raise self.exception(f'Expected {var} is not set in environment')
         return '' if url is None else url
+
+env = Env()
