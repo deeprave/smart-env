@@ -60,6 +60,11 @@ class Env:
     def get(self, var, default=None):
         return self.env.get(var, default)
 
+    def __call__(self, var, default=None):
+        if default is not None and not self.is_set(var):
+            self.set(var, default)
+        return self.get(var, default)
+
     def pop(self, var, default=None):
         val = self.get(var, default)
         self.unset(var)

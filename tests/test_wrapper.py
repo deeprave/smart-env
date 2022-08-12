@@ -32,6 +32,18 @@ def test_env_wrapper():
     assert 'USER' in env
 
 
+def test_env_call():
+    env = envex.Env()
+    var, val = 'MY_VARIABLE', 'MY_VARIABLE_VALUE'
+    assert var not in env
+    value = env(var)
+    assert value is None
+    value = env(var, val)
+    assert value == val
+    assert var in env
+    assert env[var] == val
+
+
 def test_env_int(monkeypatch):
     monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
     env = envex.Env(readenv=True)
