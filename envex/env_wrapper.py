@@ -22,6 +22,13 @@ class Env:
         return os.environ
 
     def __init__(self, *args, environ: MutableMapping[str, str] = None, exception=None, readenv=False, **kwargs):
+        self.__typemap = {
+            str: self.get,
+            int: self.int,
+            bool: self.bool,
+            float: self.float,
+            list: self.list,
+        }
         self._env = environ or self.os_env()
         self._env.update(args)
         if readenv:
@@ -60,9 +67,13 @@ class Env:
     def get(self, var, default=None):
         return self.env.get(var, default)
 
-    def __call__(self, var, default=None):
+    def __call__(self, var, default=None, type=str):
         if default is not None and not self.is_set(var):
             self.set(var, default)
+        try:
+            return self.__typemap[type](var, default=default)
+        except KeyError:
+            pass
         return self.get(var, default)
 
     def pop(self, var, default=None):

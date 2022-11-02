@@ -48,14 +48,20 @@ def test_env_int(monkeypatch):
     monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
     env = envex.Env(readenv=True)
     assert env.int('INTVALUE', default=99) == 225
+    assert env('INTVALUE', default=99, type=int) == 225
     assert env.int('DEFAULTINTVALUE', default=981) == 981
+    assert env('DEFAULTINTVALUE', default=981, type=int) == 981
+    assert env('DEFAULTINTVALUE', type=int) == 981
 
 
 def test_env_float(monkeypatch):
     monkeypatch.setattr(envex.dot_env, 'open_env', dotenv)
     env = envex.Env(readenv=True)
     assert env.float('FLOATVALUE', default=99.9999) == 54.92
+    assert env('FLOATVALUE', default=99.9999, type=float) == 54.92
     assert env.float('DEFAULTFLOATVALUE', default=83.6) == 83.6
+    assert env('DEFAULTFLOATVALUE', default=83.6, type=float) == 83.6
+    assert env('DEFAULTFLOATVALUE', type=float) == 83.6
 
 
 def test_is_true():
@@ -75,8 +81,10 @@ def test_env_bool(monkeypatch):
     env = envex.Env(readenv=True)
     assert env.bool('BOOLVALUETRUE', default=False)
     assert env.bool('DEFAULTBOOLVALUETRUE', default=True)
+    assert env('DEFAULTBOOLVALUETRUE', default=True, type=bool)
     assert not env.bool('BOOLVALUEFALSE', default=True)
     assert not env.bool('DEFAULTBOOLVALUEFALSE', default=False)
+    assert not env('DEFAULTBOOLVALUEFALSE', type=bool)
 
 
 def test_env_list(monkeypatch):
@@ -88,7 +96,17 @@ def test_env_list(monkeypatch):
     assert len(result) == 3
     assert result == ['::1', '127.0.0.1', 'mydomain.com']
 
+    result = env('ALISTOFIPS', type=list)
+    assert isinstance(result, list)
+    assert len(result) == 3
+    assert result == ['::1', '127.0.0.1', 'mydomain.com']
+
     result = env.list('LISTOFQUOTEDVALUES')
+    assert isinstance(result, list)
+    assert len(result) == 4
+    assert result == ['1', 'two', '3', 'four']
+
+    result = env('LISTOFQUOTEDVALUES', type=list)
     assert isinstance(result, list)
     assert len(result) == 4
     assert result == ['1', 'two', '3', 'four']
