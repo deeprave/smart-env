@@ -86,5 +86,5 @@ assert env.list('A_LIST_VALUE') == ['1', 'two', '3', 'four']
 ```
 
 Note that environment variables are always stored as strings. This is
-enforced by the underlying os.environ, but also also true of any provided
+enforced by the underlying os.environ, but also true of any provided
 environment, using the `MutableMapping[str, str]` contract.
